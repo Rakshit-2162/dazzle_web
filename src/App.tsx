@@ -8,9 +8,9 @@ import { useAuth } from "./features/auth/hooks/useAuth";
 import DazzleSnackbar from "./shared/components/DazzleSnackbar";
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  useAuth()
-  return <>{children}</>
-}
+  useAuth();
+  return <>{children}</>;
+};
 
 const App = () => {
   const { mode } = useThemeStore();
@@ -19,7 +19,7 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.PROD ? "/dazzle-web" : "/"}>
         <AuthProvider>
           <AppRoutes />
           <DazzleSnackbar />
