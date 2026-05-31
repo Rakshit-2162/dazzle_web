@@ -5,7 +5,7 @@ import { useThemeStore } from "./store/themeStore";
 import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
 import { useAuth } from "./features/auth/hooks/useAuth";
-import DazzleSnackbar from "./shared/components/DazzleSnackBar";
+import DazzleSnackbar from "./shared/components/DazzleSnackbar";
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useAuth()
