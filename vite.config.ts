@@ -7,6 +7,6 @@ export default defineConfig({
   // Works for local + GitHub Pages
   base:
     process.env.NODE_ENV === 'production'
-      ? '/dazzle-web/'
+      ? '/dazzle_web/'
       : '/',
 })

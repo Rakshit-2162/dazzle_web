@@ -19,7 +19,7 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter basename={import.meta.env.PROD ? "/dazzle-web" : "/"}>
+      <BrowserRouter basename={import.meta.env.PROD ? "/dazzle_web" : "/"}>
         <AuthProvider>
           <AppRoutes />
           <DazzleSnackbar />
