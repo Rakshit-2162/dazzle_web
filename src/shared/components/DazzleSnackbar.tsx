@@ -9,7 +9,7 @@ const DazzleSnackbar = () => {
       open={open}
       autoHideDuration={3000}
       onClose={hideSnackbar}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
     >
       <Alert
         onClose={hideSnackbar}

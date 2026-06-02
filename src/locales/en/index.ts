@@ -118,6 +118,7 @@ const en = {
     updateSuccess: "Category updated successfully",
     deleteSuccess: "Category deleted successfully",
     deleteConfirm: "Are you sure you want to delete this category?",
+    deleteWarning: "Deleting this category will also remove all associated products.",
   },
   products: {
     title: "Products",
@@ -160,6 +161,12 @@ const en = {
     updateSuccess: "Order updated successfully",
     deleteSuccess: "Order deleted successfully",
     deleteConfirm: "Are you sure you want to delete this order?",
+    orderNo: "Order No.",
+    viewItems: "View Items",
+    markComplete: "Mark as Complete",
+    markInProgress: "Mark as In Progress",
+    markedComplete: "Order marked as complete",
+    markedInProgress: "Order marked as in progress",
   },
   orderItems: {
     title: "Order Items",
@@ -171,7 +178,13 @@ const en = {
     addSuccess: "Items added successfully",
     updateSuccess: "Item updated successfully",
     deleteSuccess: "Items deleted successfully",
-    deleteConfirm: "Are you sure you want to delete selected items?",
+    addMore: "Add More",
+    itemCount: "{{count}} item(s) will be added",
+    selected: "item(s) selected",
+    selectAll: "Select All",
+    selectItems: "Select Items",
+    reviewItems: "Review Items",
+    deleteConfirm: "Are you sure you want to delete {{count}} items?",
   },
   validation: {
     emailRequired: "Email is required",
@@ -182,6 +195,9 @@ const en = {
     userTypeRequired: "User type is required",
     confirmPasswordRequired: "Confirm password is required",
     passwordMismatch: "Passwords do not match",
+    categoryNameRequired: "Category name is required",
+    required: "This field is required",
+    mobileInvalid: "Enter a valid 10-digit mobile number",
   },
 };
 

@@ -1,6 +1,7 @@
 import { TextField, InputAdornment, useTheme } from '@mui/material'
 import type { ReactNode } from 'react'
-import { Controller, type RegisterOptions } from 'react-hook-form'
+import { Controller } from 'react-hook-form'
+import type { RegisterOptions } from 'react-hook-form'
 
 interface DazzleTextFieldProps {
   name: string
@@ -20,6 +21,8 @@ interface DazzleTextFieldProps {
   startIcon?: ReactNode
   endIcon?: ReactNode
   rules?: RegisterOptions
+  select?: boolean
+  children?: ReactNode
 }
 
 const DazzleTextField = ({
@@ -39,6 +42,8 @@ const DazzleTextField = ({
   startIcon,
   endIcon,
   rules,
+  select = false,
+  children,
 }: DazzleTextFieldProps) => {
   const theme = useTheme()
   const isDark = theme.palette.mode === 'dark'
@@ -64,6 +69,7 @@ const DazzleTextField = ({
           error={!!error}
           helperText={error ? error.message : ''}
           autoComplete="off"
+          select={select}
           slotProps={{
             input: {
               startAdornment: startIcon ? (
@@ -79,18 +85,14 @@ const DazzleTextField = ({
             borderRadius: borderRadius,
             '& .MuiOutlinedInput-root': {
               borderRadius: borderRadius,
-              '& fieldset': {
-                borderColor: 'transparent',
-              },
-              '&:hover fieldset': {
-                borderColor: 'transparent',
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: 'transparent',
-              },
+              '& fieldset': { borderColor: 'transparent' },
+              '&:hover fieldset': { borderColor: 'transparent' },
+              '&.Mui-focused fieldset': { borderColor: 'transparent' },
             },
           }}
-        />
+        >
+          {children}
+        </TextField>
       )}
     />
   )

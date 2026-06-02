@@ -11,6 +11,8 @@ import OrdersPage from "../pages/OrdersPage/OrdersPage";
 import CatalogPage from "../pages/CatalogPage/CatalogPage";
 import ClientsPage from "../pages/ClientsPage/ClientsPage";
 import MyAccountPage from "../pages/MyAccountPage/MyAccountPage";
+import CatalogProductsPage from "../pages/CatalogProductsPage/CatalogProductsPage";
+import OrderDetailPage from "../pages/OrderDetailsPage/OrderDetailPage";
 
 const AppRoutes = () => {
   return (
@@ -56,11 +58,31 @@ const AppRoutes = () => {
         }
       />
       <Route
+        path={PATHS.ORDER_DETAIL}
+        element={
+          <ProtectedRoute>
+            <Layout pageTitle="Order Details">
+              <OrderDetailPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path={PATHS.CATALOG}
         element={
           <ProtectedRoute>
             <Layout pageTitle="Catalog Management">
               <CatalogPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={PATHS.CATALOG_PRODUCTS}
+        element={
+          <ProtectedRoute>
+            <Layout pageTitle="Products">
+              <CatalogProductsPage />
             </Layout>
           </ProtectedRoute>
         }

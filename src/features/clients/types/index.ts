@@ -11,3 +11,10 @@ export interface Client {
     updated_at: string;
     updated_by: string;
 }
+
+export interface ClientForm {
+    name: string;
+    city: string;
+    mobile: string;
+    status: Status;
+}
