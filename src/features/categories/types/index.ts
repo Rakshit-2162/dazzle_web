@@ -10,3 +10,9 @@ export interface Category {
     updated_at: string;
     updated_by: string;
 }
+
+export interface CategoryForm {
+    name: string;
+    type: CategoryType;
+    status: Status;
+}

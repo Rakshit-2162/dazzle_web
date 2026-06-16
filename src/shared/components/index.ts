@@ -1,4 +1,7 @@
 export { default as DazzleTextField } from './DazzleTextField'
 export { default as DazzleButton } from './DazzleButton'
 export { default as DazzleSnackbar } from './DazzleSnackbar'
+export { default as DazzleDialog } from './DazzleDialog'
+export { default as DazzleTable } from './DazzleTable'
+export type { DazzleTableColumn } from './DazzleTable'
 export * from './Layout'

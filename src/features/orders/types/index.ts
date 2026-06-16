@@ -4,6 +4,7 @@ import type { Product } from "../../products/types";
 
 export interface OrderMaster {
   id: string;
+  order_no: number;
   client_id: string;
   total_qty: number;
   remarks: string;
@@ -12,7 +13,7 @@ export interface OrderMaster {
   created_by: string;
   updated_at: string;
   updated_by: string;
-  client?: Client;
+  clients?: Client;
 }
 
 export interface OrderItem {
@@ -24,5 +25,16 @@ export interface OrderItem {
   created_by: string;
   updated_at: string;
   updated_by: string;
-  product?: Product;
+  products?: Product;
+}
+
+export interface OrderMasterForm {
+  client_id: string;
+  remarks: string;
+  order_status: OrderStatus;
+}
+
+export interface OrderItemForm {
+  product_code: string;
+  qty: number;
 }

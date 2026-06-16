@@ -6,7 +6,7 @@ export const PATHS = {
   ORDERS: '/orders',
   ORDER_DETAIL: '/orders/:id',
   CATALOG: '/catalog',
-  CATALOG_PRODUCT: '/catalog/:categoryId',
+  CATALOG_PRODUCTS: '/catalog/:categoryId',
   CLIENTS: '/clients',
   MY_ACCOUNT: '/my-account',
 } as const
