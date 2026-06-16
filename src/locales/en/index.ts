@@ -132,6 +132,7 @@ const en = {
     updateSuccess: "Product updated successfully",
     deleteSuccess: "Product deleted successfully",
     deleteConfirm: "Are you sure you want to delete this product?",
+    notFound: "Product not found",
   },
   clients: {
     title: "Clients",
@@ -185,6 +186,15 @@ const en = {
     selectItems: "Select Items",
     reviewItems: "Review Items",
     deleteConfirm: "Are you sure you want to delete {{count}} items?",
+    addByCode: "Add Products by Code",
+    enterProductCode: "Enter product code",
+    scanOrType: "Type product code and press Enter",
+    qtyUpdated: "Quantity updated",
+    productAdded: "Product added to cart",
+    cartSummary: "Cart Summary",
+    products: "product(s)",
+    qty: "Qty",
+    emptyCartHint: "No items added yet. Use the search bar to add items to the order.",
   },
   validation: {
     emailRequired: "Email is required",

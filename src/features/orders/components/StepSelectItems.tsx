@@ -1,26 +1,19 @@
 import {
   Box,
   Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  TextField,
-  InputAdornment,
-  Chip,
   Paper,
-  Tooltip,
+  TextField,
+  IconButton,
+  Divider,
+  useTheme,
 } from '@mui/material'
-import { Add, Remove, Search } from '@mui/icons-material'
-import { useState } from 'react'
-import { useTheme } from '@mui/material'
+import { Check, Close, Delete } from '@mui/icons-material'
+import { useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { tokens } from '../../../styles/theme'
 import type { Product } from '../../products/types'
 import type { OrderItemForm } from '../types'
+import { useSnackbarStore } from '../../../store/snackbarStore'
 
 interface StepSelectItemsProps {
   products: Product[]
@@ -32,261 +25,289 @@ const StepSelectItems = ({ products, cart, setCart }: StepSelectItemsProps) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const colors = tokens(theme.palette.mode)
-  const [search, setSearch] = useState('')
+  const { showSnackbar } = useSnackbarStore()
 
-  const filteredProducts = products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.code.toLowerCase().includes(search.toLowerCase())
-  )
+  const [searchCode, setSearchCode] = useState('')
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [qty, setQty] = useState('')
 
-  const getCartQty = (code: string) => {
-    return cart.find((item) => item.product_code === code)?.qty ?? 0
+  const codeInputRef = useRef<HTMLInputElement>(null)
+  const qtyInputRef = useRef<HTMLInputElement>(null)
+
+  const totalQty = cart.reduce((sum, item) => sum + item.qty, 0)
+
+  const handleCodeEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Enter' || !searchCode.trim()) return
+
+    const found = products.find(
+      (p) => p.code.toLowerCase() === searchCode.trim().toLowerCase()
+    )
+
+    if (found) {
+      setSelectedProduct(found)
+      setQty('')
+      setTimeout(() => qtyInputRef.current?.focus(), 100)
+    } else {
+      showSnackbar(t('products.notFound'), 'error')
+    }
   }
 
-  const handleAdd = (product: Product) => {
+  const handleQtyEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Enter') return
+    confirmAdd()
+  }
+
+  const confirmAdd = () => {
+    if (!selectedProduct || Number(qty) <= 0) return
+
     setCart((prev) => {
-      const existing = prev.find((item) => item.product_code === product.code)
+      const existing = prev.find(
+        (item) => item.product_code === selectedProduct.code
+      )
       if (existing) {
+        showSnackbar(t('orderItems.qtyUpdated'), 'success')
         return prev.map((item) =>
-          item.product_code === product.code
-            ? { ...item, qty: item.qty + 1 }
+          item.product_code === selectedProduct.code
+            ? { ...item, qty: Number(qty) }
             : item
         )
       }
-      return [...prev, { product_code: product.code, qty: 1 }]
+      showSnackbar(t('orderItems.productAdded'), 'success')
+      return [...prev, { product_code: selectedProduct.code, qty: Number(qty) }]
     })
+
+    setSelectedProduct(null)
+    setSearchCode('')
+    setQty('')
+    setTimeout(() => codeInputRef.current?.focus(), 100)
   }
 
-  const handleRemove = (product: Product) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.product_code === product.code)
-      if (!existing) return prev
-      if (existing.qty <= 1) {
-        return prev.filter((item) => item.product_code !== product.code)
-      }
-      return prev.map((item) =>
-        item.product_code === product.code
-          ? { ...item, qty: item.qty - 1 }
-          : item
-      )
-    })
+  const handleCancelProduct = () => {
+    setSelectedProduct(null)
+    setSearchCode('')
+    setQty('')
+    setTimeout(() => codeInputRef.current?.focus(), 100)
   }
 
-  const handleQtyChange = (product: Product, value: number) => {
-    if (value <= 0) {
-      setCart((prev) =>
-        prev.filter((item) => item.product_code !== product.code)
-      )
-      return
-    }
-    setCart((prev) => {
-      const existing = prev.find((item) => item.product_code === product.code)
-      if (existing) {
-        return prev.map((item) =>
-          item.product_code === product.code ? { ...item, qty: value } : item
-        )
-      }
-      return [...prev, { product_code: product.code, qty: value }]
-    })
+  const handleRemoveFromCart = (code: string) => {
+    setCart((prev) => prev.filter((item) => item.product_code !== code))
   }
 
-  const totalItems = cart.reduce((sum, item) => sum + item.qty, 0)
+  const getProductName = (code: string) =>
+    products.find((p) => p.code === code)?.name ?? '—'
 
   return (
-    <Box>
-      {/* Search + cart summary */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          mb: 2,
-        }}
+    <Box sx={{ width: '100%' }}>
+      <Typography
+        variant="subtitle1"
+        sx={{ fontWeight: 600, color: colors.text.primary, mb: 2 }}
       >
-        <TextField
-          size="small"
-          placeholder={t('products.productName')}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search fontSize="small" sx={{ color: colors.text.secondary }} />
-                </InputAdornment>
-              ),
-            },
-          }}
-          sx={{
-            width: 260,
-            bgcolor: colors.background.paper,
-            borderRadius: 2,
-            '& .MuiOutlinedInput-root': { borderRadius: 2 },
-          }}
-        />
-        {cart.length > 0 && (
-          <Chip
-            label={`${cart.length} product(s) — ${totalItems} qty`}
-            size="small"
-            sx={{
-              backgroundColor: `${colors.primary.main}18`,
-              color: colors.primary.main,
-              fontWeight: 600,
-              fontSize: 12,
-            }}
-          />
-        )}
-      </Box>
+        {t('orderItems.addByCode')}
+      </Typography>
 
-      {/* Products table */}
-      <TableContainer
-        component={Paper}
+      {/* Code input */}
+      <Paper
         elevation={0}
         sx={{
           border: `1px solid ${theme.palette.divider}`,
           borderRadius: 2,
-          maxHeight: 380,
-          overflow: 'auto',
+          p: 2.5,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          backgroundColor: colors.background.paper,
         }}
       >
-        <Table stickyHeader size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell
-                sx={{
-                  fontWeight: 600,
-                  fontSize: 12,
-                  color: colors.text.secondary,
-                  backgroundColor: theme.palette.mode === 'dark'
-                    ? 'rgba(255,255,255,0.04)'
-                    : 'rgba(0,0,0,0.02)',
-                }}
-              >
-                {t('products.productCode')}
-              </TableCell>
-              <TableCell
-                sx={{
-                  fontWeight: 600,
-                  fontSize: 12,
-                  color: colors.text.secondary,
-                  backgroundColor: theme.palette.mode === 'dark'
-                    ? 'rgba(255,255,255,0.04)'
-                    : 'rgba(0,0,0,0.02)',
-                }}
-              >
-                {t('products.productName')}
-              </TableCell>
-              <TableCell
-                align="center"
-                sx={{
-                  fontWeight: 600,
-                  fontSize: 12,
-                  color: colors.text.secondary,
-                  width: 140,
-                  backgroundColor: theme.palette.mode === 'dark'
-                    ? 'rgba(255,255,255,0.04)'
-                    : 'rgba(0,0,0,0.02)',
-                }}
-              >
-                {t('orderItems.quantity')}
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredProducts.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={3} align="center" sx={{ py: 4 }}>
-                  <Typography variant="body2" sx={{ color: colors.text.secondary }}>
-                    {t('common.noData')}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredProducts.map((product) => {
-                const qty = getCartQty(product.code)
-                const inCart = qty > 0
+        <TextField
+          inputRef={codeInputRef}
+          label={t('orderItems.enterProductCode')}
+          value={searchCode}
+          onChange={(e) => setSearchCode(e.target.value)}
+          onKeyDown={handleCodeEnter}
+          placeholder={t('orderItems.scanOrType')}
+          fullWidth
+          size="small"
+          disabled={!!selectedProduct}
+          autoFocus
+          sx={{
+            '& .MuiOutlinedInput-root': { borderRadius: 2 },
+          }}
+        />
 
-                return (
-                  <TableRow
-                    key={product.code}
-                    sx={{
-                      backgroundColor: inCart
-                        ? `${colors.primary.main}08`
-                        : 'transparent',
-                      '&:last-child td': { border: 0 },
-                    }}
-                  >
-                    <TableCell sx={{ fontSize: 13, color: colors.text.secondary }}>
-                      {product.code}
-                    </TableCell>
-                    <TableCell sx={{ fontSize: 13, color: colors.text.primary, fontWeight: inCart ? 600 : 400 }}>
-                      {product.name}
-                    </TableCell>
-                    <TableCell align="center">
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: 0.5,
-                        }}
-                      >
-                        <Tooltip title="Remove">
-                          <span>
-                            <IconButton
-                              size="small"
-                              onClick={() => handleRemove(product)}
-                              disabled={qty === 0}
-                              sx={{
-                                color: qty > 0 ? '#F44336' : colors.text.secondary,
-                                width: 28,
-                                height: 28,
-                              }}
-                            >
-                              <Remove sx={{ fontSize: 16 }} />
-                            </IconButton>
-                          </span>
-                        </Tooltip>
-                        <TextField
-                          size="small"
-                          value={qty === 0 ? '' : qty}
-                          onChange={(e) =>
-                            handleQtyChange(product, parseInt(e.target.value) || 0)
-                          }
-                          placeholder="0"
-                          sx={{
-                            width: 52,
-                            '& .MuiOutlinedInput-root': { borderRadius: 1 },
-                            '& input': {
-                              textAlign: 'center',
-                              fontSize: 13,
-                              p: '4px 6px',
-                            },
-                          }}
-                        />
-                        <Tooltip title="Add">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleAdd(product)}
-                            sx={{
-                              color: colors.primary.main,
-                              width: 28,
-                              height: 28,
-                            }}
-                          >
-                            <Add sx={{ fontSize: 16 }} />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                )
-              })
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+        {/* Selected product row */}
+        {selectedProduct && (
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              backgroundColor: theme.palette.mode === 'dark'
+                ? 'rgba(255,255,255,0.05)'
+                : 'rgba(0,63,255,0.04)',
+              border: `1px solid ${colors.primary.main}30`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 2,
+            }}
+          >
+            {/* Product info */}
+            <Box>
+              <Typography
+                sx={{ fontWeight: 600, fontSize: 14, color: colors.text.primary }}
+              >
+                {selectedProduct.name}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{ color: colors.text.secondary }}
+              >
+                {t('products.productCode')}: {selectedProduct.code}
+              </Typography>
+            </Box>
+
+            {/* Qty input + actions */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <TextField
+                inputRef={qtyInputRef}
+                label={t('orderItems.quantity')}
+                size="small"
+                type="number"
+                value={qty}
+                onChange={(e) => setQty(e.target.value)}
+                onKeyDown={handleQtyEnter}
+                slotProps={{
+                  htmlInput: { min: 1 }
+                }}
+                sx={{
+                  width: 90,
+                  '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                }}
+              />
+              <IconButton
+                onClick={confirmAdd}
+                disabled={!qty || Number(qty) <= 0}
+                sx={{
+                  color: '#4CAF50',
+                  '&:hover': { backgroundColor: '#4CAF5015' },
+                }}
+              >
+                <Check />
+              </IconButton>
+              <IconButton
+                onClick={handleCancelProduct}
+                sx={{
+                  color: '#F44336',
+                  '&:hover': { backgroundColor: '#F4433615' },
+                }}
+              >
+                <Close />
+              </IconButton>
+            </Box>
+          </Box>
+        )}
+      </Paper>
+
+      {/* Cart summary */}
+      {cart.length > 0 && (
+        <Box sx={{ mt: 3 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 1.5,
+            }}
+          >
+            <Typography
+              sx={{ fontWeight: 600, fontSize: 13, color: colors.text.primary }}
+            >
+              {t('orderItems.cartSummary')} ({cart.length} {t('orderItems.products')})
+            </Typography>
+            <Typography
+              sx={{ fontWeight: 600, fontSize: 13, color: colors.primary.main }}
+            >
+              {t('orders.totalQty')}: {totalQty}
+            </Typography>
+          </Box>
+
+          <Paper
+            elevation={0}
+            sx={{
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: 2,
+              overflow: 'hidden',
+              maxHeight: 220,
+              overflowY: 'auto',
+            }}
+          >
+            {cart.map((item, index) => (
+              <Box key={item.product_code}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    px: 2,
+                    py: 1.2,
+                  }}
+                >
+                  <Box>
+                    <Typography
+                      sx={{ fontSize: 13, fontWeight: 500, color: colors.text.primary }}
+                    >
+                      {getProductName(item.product_code)}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: colors.text.secondary }}
+                    >
+                      {item.product_code}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Typography
+                      sx={{
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: colors.primary.main,
+                        minWidth: 40,
+                        textAlign: 'right',
+                      }}
+                    >
+                      {t('orderItems.qty')}: {item.qty}
+                    </Typography>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleRemoveFromCart(item.product_code)}
+                      sx={{ color: '#F44336' }}
+                    >
+                      <Delete sx={{ fontSize: 16 }} />
+                    </IconButton>
+                  </Box>
+                </Box>
+                {index < cart.length - 1 && <Divider />}
+              </Box>
+            ))}
+          </Paper>
+        </Box>
+      )}
+
+      {/* Empty cart hint */}
+      {cart.length === 0 && (
+        <Box
+          sx={{
+            mt: 3,
+            p: 3,
+            borderRadius: 2,
+            border: `1px dashed ${theme.palette.divider}`,
+            textAlign: 'center',
+          }}
+        >
+          <Typography sx={{ color: colors.text.secondary, fontSize: 13 }}>
+            {t('orderItems.emptyCartHint')}
+          </Typography>
+        </Box>
+      )}
     </Box>
   )
 }
