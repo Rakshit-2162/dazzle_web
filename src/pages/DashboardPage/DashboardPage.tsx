@@ -10,10 +10,12 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useDashboard } from '../../features/dashboard/hooks/useDashboard'
 import StatCard from '../../features/dashboard/components/StatCard'
+import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle'
 
 const DashboardPage = () => {
   const { t } = useTranslation()
   const { stats, isLoading } = useDashboard()
+  useDocumentTitle(t('dashboard.title'))
 
   const statCards = [
     {

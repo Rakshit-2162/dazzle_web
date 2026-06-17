@@ -15,7 +15,7 @@ const DazzleSnackbar = () => {
         onClose={hideSnackbar}
         severity={severity}
         variant="filled"
-        sx={{ width: '100%', borderRadius: 2 }}
+        sx={{ width: '100%', borderRadius: 1.5 }}
       >
         {message}
       </Alert>

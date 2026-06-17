@@ -14,7 +14,7 @@ const BLUE = "4472C4";
 const LIGHT_GREY = "F2F2F2";
 
 export async function exportToExcel(
-  orderMaster: OrderMaster,
+  orderMaster: OrderMaster | null,
   orderItems: OrderItem[],
   fileName: string,
 ) {
@@ -52,13 +52,13 @@ export async function exportToExcel(
   );
 }
 
-function addMetadata(sheet: ExcelJS.Worksheet, order: OrderMaster, totalColumns: number) {
+function addMetadata(sheet: ExcelJS.Worksheet, order: OrderMaster | null, totalColumns: number) {
   const rows = [
-    ["Order No", order.order_no],
-    ["Distributor", order.clients?.name ?? ""],
-    ["Total Qty", `${order.total_qty} item(s)`],
-    ["Remarks", order.remarks ?? ""],
-    ["Date", order.created_at.slice(0, 10)],
+    ["Order No", order?.order_no],
+    ["Distributor", order?.clients?.name ?? ""],
+    ["Total Qty", `${order?.total_qty} item(s)`],
+    ["Remarks", order?.remarks ?? ""],
+    ["Date", order?.created_at?.slice(0, 10) ?? ""],
   ];
 
   rows.forEach(([label, value]) => {
@@ -174,30 +174,6 @@ function addSecondaryTables(sheet: ExcelJS.Worksheet, items: OrderItem[]) {
     });
   });
 }
-
-// function styleTitle(row: ExcelJS.Row) {
-//   row.font = {
-//     bold: true,
-//     size: 14,
-//     color: { argb: "FFFFFF" },
-//   };
-
-//   row.alignment = {
-//     horizontal: "center",
-//     vertical: "middle",
-//   };
-
-//   row.height = 22;
-
-//   row.eachCell((c) => {
-//     c.fill = {
-//       type: "pattern",
-//       pattern: "solid",
-//       fgColor: { argb: BLUE },
-//     };
-//     c.border = BORDER_THIN;
-//   });
-// }
 
 function styleHeader(row: ExcelJS.Row) {
   row.font = { bold: true, color: { argb: "FFFFFF" } };

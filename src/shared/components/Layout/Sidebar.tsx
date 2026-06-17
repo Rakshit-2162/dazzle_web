@@ -169,7 +169,12 @@ const Sidebar = ({ isCollapsed, onToggle, width }: SidebarProps) => {
           size="small"
           sx={{
             color: colors.text.secondary,
-            "&:hover": { backgroundColor: colors.blueAccent13.main },
+            "&:hover": {
+              backgroundColor:
+                theme.palette.mode === "dark"
+                  ? "rgba(255,255,255,0.08)"
+                  : colors.blueAccent13.main,
+            },
             ml: isCollapsed ? 0 : "auto",
           }}
         >

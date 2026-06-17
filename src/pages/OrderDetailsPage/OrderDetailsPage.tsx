@@ -35,8 +35,7 @@ import { PATHS } from "../../routes/paths";
 import type { OrderItem } from "../../features/orders/types";
 import { useForm } from "react-hook-form";
 import { DazzleTextField } from "../../shared/components";
-import { exportToExcel } from "../../features/orders/services/downloadExcelService";
-import { useState } from "react";
+import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
 
 const OrderDetailPage = () => {
   const { t } = useTranslation();
@@ -44,7 +43,7 @@ const OrderDetailPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [isDownloading, setIsDownloading] = useState(false);
+  useDocumentTitle(t("orderItems.title"));
 
   const {
     order,
@@ -52,6 +51,7 @@ const OrderDetailPage = () => {
     isLoading,
     isSubmitting,
     isTogglingStatus,
+    isDownloading,
     selectedItem,
     selectedItemIds,
     addItemsDialogOpen,
@@ -67,6 +67,7 @@ const OrderDetailPage = () => {
     handleToggleStatus,
     toggleItemSelection,
     toggleAllItems,
+    handleDownloadExcel,
   } = useOrderDetail(id ?? "");
 
   const { control, handleSubmit, reset } = useForm<{ qty: number }>({
@@ -74,18 +75,6 @@ const OrderDetailPage = () => {
   });
 
   const isCompleted = order?.order_status === OrderStatus.COMPLETED;
-
-  const handleDownloadExcel = async () => {
-    if (!order || items.length === 0) return;
-    try {
-      setIsDownloading(true);
-      await exportToExcel(order, items, `Order_${order.order_no}.xlsx`);
-    } catch (error) {
-      console.error("Error downloading Excel file:", error);
-    } finally {
-      setIsDownloading(false);
-    }
-  };
 
   const columns: DazzleTableColumn[] = [
     {
@@ -176,6 +165,17 @@ const OrderDetailPage = () => {
         </Box>
 
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+          {/* Delete selected items */}
+          {selectedItemIds.length > 0 && (
+            <DazzleButton
+              label={`${t("common.delete")} (${selectedItemIds.length})`}
+              variant="outlined"
+              startIcon={<Delete />}
+              onClick={() => setDeleteItemsDialogOpen(true)}
+              sx={{ color: "#F44336", borderColor: "#F44336" }}
+            />
+          )}
+
           {/* Mark complete/in progress button */}
           <DazzleButton
             label={
@@ -189,17 +189,7 @@ const OrderDetailPage = () => {
             isLoading={isTogglingStatus}
           />
 
-          {/* Delete selected items */}
-          {selectedItemIds.length > 0 && (
-            <DazzleButton
-              label={`${t("common.delete")} (${selectedItemIds.length})`}
-              variant="outlined"
-              startIcon={<Delete />}
-              onClick={() => setDeleteItemsDialogOpen(true)}
-              sx={{ color: "#F44336", borderColor: "#F44336" }}
-            />
-          )}
-
+          {/* Download Excel button */}
           <DazzleButton
             label={t("orders.downloadExcel")}
             startIcon={<SaveAltRounded />}

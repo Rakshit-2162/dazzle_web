@@ -5,6 +5,7 @@ import { useSnackbarStore } from "../../../store/snackbarStore";
 import { useAuthStore } from "../../../store/authStore";
 import type { OrderMaster, OrderItem, OrderItemForm } from "../types";
 import { OrderStatus } from "../../../constants";
+import { exportToExcel } from "../services/downloadExcelService";
 
 export const useOrderDetail = (orderId: string) => {
   const { t } = useTranslation();
@@ -23,6 +24,7 @@ export const useOrderDetail = (orderId: string) => {
   const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
   const [isTogglingStatus, setIsTogglingStatus] = useState(false);
   const [deleteItemsDialogOpen, setDeleteItemsDialogOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     const fetchOrderDetail = async () => {
@@ -113,7 +115,6 @@ export const useOrderDetail = (orderId: string) => {
     setIsTogglingStatus(false);
   };
 
-  // update handleDeleteItems
   const handleDeleteItems = async () => {
     if (!user || selectedItemIds.length === 0) return;
     setIsSubmitting(true);
@@ -129,6 +130,22 @@ export const useOrderDetail = (orderId: string) => {
     setIsSubmitting(false);
   };
 
+  const handleDownloadExcel = async () => {
+    if (items.length === 0) {
+      showSnackbar(t("orderItems.noItemsToDownload"), "info");
+      return;
+    }
+
+    try {
+      setIsDownloading(true);
+      await exportToExcel(order, items, `Order_${order?.order_no}.xlsx`);
+    } catch (error) {
+      showSnackbar(`Error downloading Excel file: ${error}`, "error");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return {
     order,
     items,
@@ -140,6 +157,7 @@ export const useOrderDetail = (orderId: string) => {
     editItemDialogOpen,
     isTogglingStatus,
     deleteItemsDialogOpen,
+    isDownloading,
     setAddItemsDialogOpen,
     setEditItemDialogOpen,
     setDeleteItemsDialogOpen,
@@ -151,5 +169,6 @@ export const useOrderDetail = (orderId: string) => {
     toggleAllItems,
     refresh,
     handleToggleStatus,
+    handleDownloadExcel,
   };
 };

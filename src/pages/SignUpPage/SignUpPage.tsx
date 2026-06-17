@@ -16,6 +16,7 @@ import { DazzleTextField, DazzleButton } from '../../shared/components'
 import { tokens } from '../../styles/theme'
 import { useThemeStore } from '../../store/themeStore'
 import { PATHS } from '../../routes/paths'
+import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle'
 
 const SignUpPage = () => {
   const { t } = useTranslation()
@@ -25,6 +26,7 @@ const SignUpPage = () => {
   const { isLoading, onSubmit } = useSignUp()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  useDocumentTitle(t('auth.signUp'))
 
   const { control, handleSubmit, getValues } = useForm<SignUpFormValues>({
     defaultValues: {

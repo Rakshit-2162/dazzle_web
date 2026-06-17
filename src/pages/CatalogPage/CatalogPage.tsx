@@ -24,12 +24,14 @@ import CategoryForm from '../../features/categories/components/CategoryForm'
 import { DazzleButton, DazzleDialog } from '../../shared/components'
 import { PATHS } from '../../routes/paths'
 import { Status } from '../../constants'
+import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle'
 
 const CatalogPage = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const theme = useTheme()
   const colors = tokens(theme.palette.mode)
+  useDocumentTitle(t('categories.title'))
 
   const {
     categories,

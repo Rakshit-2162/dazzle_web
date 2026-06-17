@@ -15,11 +15,13 @@ import type { DazzleTableColumn } from "../../shared/components";
 import { OrderStatus } from "../../constants";
 import { PATHS } from "../../routes/paths";
 import type { OrderMaster } from "../../features/orders/types";
+import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
 
 const OrdersPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
+  useDocumentTitle(t("orders.title"));
   const colors = tokens(theme.palette.mode);
 
   const {

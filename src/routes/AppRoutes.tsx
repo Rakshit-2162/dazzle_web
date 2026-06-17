@@ -12,7 +12,7 @@ import CatalogPage from "../pages/CatalogPage/CatalogPage";
 import ClientsPage from "../pages/ClientsPage/ClientsPage";
 import MyAccountPage from "../pages/MyAccountPage/MyAccountPage";
 import CatalogProductsPage from "../pages/CatalogProductsPage/CatalogProductsPage";
-import OrderDetailPage from "../pages/OrderDetailsPage/OrderDetailPage";
+import OrderDetailPage from "../pages/OrderDetailsPage/OrderDetailsPage";
 
 const AppRoutes = () => {
   return (
