@@ -16,6 +16,7 @@ import {
   ArrowBack,
   CheckCircle,
   RadioButtonUnchecked,
+  SaveAltRounded,
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
@@ -34,6 +35,8 @@ import { PATHS } from "../../routes/paths";
 import type { OrderItem } from "../../features/orders/types";
 import { useForm } from "react-hook-form";
 import { DazzleTextField } from "../../shared/components";
+import { exportToExcel } from "../../features/orders/services/downloadExcelService";
+import { useState } from "react";
 
 const OrderDetailPage = () => {
   const { t } = useTranslation();
@@ -41,6 +44,7 @@ const OrderDetailPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const {
     order,
@@ -70,6 +74,18 @@ const OrderDetailPage = () => {
   });
 
   const isCompleted = order?.order_status === OrderStatus.COMPLETED;
+
+  const handleDownloadExcel = async () => {
+    if (!order || items.length === 0) return;
+    try {
+      setIsDownloading(true);
+      await exportToExcel(order, items, `Order_${order.order_no}.xlsx`);
+    } catch (error) {
+      console.error("Error downloading Excel file:", error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   const columns: DazzleTableColumn[] = [
     {
@@ -167,7 +183,7 @@ const OrderDetailPage = () => {
                 ? t("orders.markInProgress")
                 : t("orders.markComplete")
             }
-            variant={isCompleted ? "outlined" : "secondary"}
+            variant={"outlined"}
             startIcon={isCompleted ? <RadioButtonUnchecked /> : <CheckCircle />}
             onClick={handleToggleStatus}
             isLoading={isTogglingStatus}
@@ -184,6 +200,15 @@ const OrderDetailPage = () => {
             />
           )}
 
+          <DazzleButton
+            label={t("orders.downloadExcel")}
+            startIcon={<SaveAltRounded />}
+            variant="outlined"
+            isLoading={isDownloading}
+            onClick={handleDownloadExcel}
+          />
+
+          {/* Add items button */}
           <DazzleButton
             label={t("orderItems.addItems")}
             variant="primary"

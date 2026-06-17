@@ -58,7 +58,7 @@ export const orderService = {
   getItems: async (orderId: string) => {
     const { data, error } = await supabase
       .from("order_items")
-      .select("*, products(id, code, name, category_id, categories(id, name))")
+      .select("*, products(id, code, name, category_id, categories(id, name, type))")
       .eq("order_id", orderId)
       .order("created_at", { ascending: true });
     return { data, error };
@@ -66,20 +66,15 @@ export const orderService = {
 
   addItems: async (orderId: string, items: OrderItemForm[], userId: string) => {
     try {
-      const results = await Promise.all(
-        items.map((item) =>
-          supabase.rpc("upsert_order_item", {
-            p_order_id: orderId,
-            p_product_code: item.product_code,
-            p_qty: item.qty,
-            p_user_id: userId,
-          }),
-        ),
-      );
-
-      const error = results.find((r) => r.error)?.error ?? null;
-      const data = results.map((r) => r.data);
-      return { data, error };
+      const { error } = await supabase.rpc("upsert_order_items_bulk", {
+        p_order_id: orderId,
+        p_items: items.map((item) => ({
+          product_code: item.product_code,
+          qty: item.qty,
+        })),
+        p_user_id: userId,
+      });
+      return { data: true, error };
     } catch (error) {
       return { data: null, error };
     }

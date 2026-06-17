@@ -88,7 +88,7 @@ const DazzleButton = ({
       startIcon={!isLoading ? startIcon : undefined}
       endIcon={!isLoading ? endIcon : undefined}
       sx={{
-        borderRadius: 2,
+        borderRadius: 1.5,
         textTransform: 'none',
         px: 3,
         py: 1,
