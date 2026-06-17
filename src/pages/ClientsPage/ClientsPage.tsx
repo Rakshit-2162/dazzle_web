@@ -9,11 +9,13 @@ import { DazzleButton, DazzleDialog, DazzleTable } from '../../shared/components
 import type { DazzleTableColumn } from '../../shared/components'
 import { Status } from '../../constants'
 import type { Client } from '../../features/clients/types'
+import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle'
 
 const ClientsPage = () => {
   const { t } = useTranslation()
   const theme = useTheme()
   const colors = tokens(theme.palette.mode)
+  useDocumentTitle(t('clients.title'))
 
   const {
     clients,

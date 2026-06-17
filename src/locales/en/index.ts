@@ -28,6 +28,7 @@ const en = {
     success: "Success",
   },
   landingPage: {
+    title: "Welcome to Dazzle",
     home: {
       title: "Elevate Your Bathroom with Style & Functionality",
       subtitle:
@@ -118,7 +119,8 @@ const en = {
     updateSuccess: "Category updated successfully",
     deleteSuccess: "Category deleted successfully",
     deleteConfirm: "Are you sure you want to delete this category?",
-    deleteWarning: "Deleting this category will also remove all associated products.",
+    deleteWarning:
+      "Deleting this category will also remove all associated products.",
   },
   products: {
     title: "Products",
@@ -171,7 +173,7 @@ const en = {
     downloadExcel: "Download Excel",
   },
   orderItems: {
-    title: "Order Items",
+    title: "Order Details",
     addItems: "Add Items",
     editItem: "Edit Item",
     deleteItems: "Delete Items",
@@ -195,7 +197,14 @@ const en = {
     cartSummary: "Cart Summary",
     products: "product(s)",
     qty: "Qty",
-    emptyCartHint: "No items added yet. Use the search bar to add items to the order.",
+    emptyCartHint:
+      "No items added yet. Use the search bar to add items to the order.",
+    noItemsToDownload: "No items to download",
+  },
+  myAccount: {
+    title: "My Account",
+    updateSuccess: "Account updated successfully",
+    updateError: "Failed to update account",
   },
   validation: {
     emailRequired: "Email is required",

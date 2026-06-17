@@ -9,6 +9,7 @@ import { tokens } from '../../styles/theme'
 import { useThemeStore } from '../../store/themeStore'
 import { PATHS } from '../../routes/paths'
 import { useNavigate } from 'react-router-dom'
+import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle'
 
 interface LoginFormValues {
   email: string
@@ -22,6 +23,7 @@ const LoginPage = () => {
   const colors = tokens(mode)
   const { isLoading, onSubmit } = useLogin()
   const [showPassword, setShowPassword] = useState(false)
+  useDocumentTitle(t('auth.login'))
 
   const { control, handleSubmit: hookFormSubmit } = useForm<LoginFormValues>({
     defaultValues: {

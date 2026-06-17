@@ -17,6 +17,7 @@ import type { Product } from "../../types";
 import { useState, useEffect } from "react";
 import { categoryService } from "../../features/categories/services/categoryService";
 import type { Category } from "../../features/categories/types";
+import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
 
 const CatalogProductsPage = () => {
   const { t } = useTranslation();
@@ -24,6 +25,7 @@ const CatalogProductsPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  useDocumentTitle(t("products.title"));
 
   const {
     products,

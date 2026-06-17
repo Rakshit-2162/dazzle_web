@@ -23,6 +23,7 @@ import { useLogout } from '../../features/auth/hooks/useLogout'
 import { DazzleButton } from '../../shared/components'
 import { PATHS } from '../../routes/paths'
 import logo from '../../assets/logo.jpg'
+import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle'
 
 const iconMap: Record<string, React.ReactNode> = {
   AutoFixHighRounded: <AutoFixHighRounded sx={{ fontSize: 32 }} />,
@@ -37,6 +38,7 @@ const LandingPage = () => {
   const colors = tokens(theme.palette.mode)
   const { isAuthenticated } = useAuthStore()
   const { logout } = useLogout()
+  useDocumentTitle(t('landingPage.home.title'))
 
   const services = t('landingPage.services.content', { returnObjects: true }) as Array<{
     icon: string
