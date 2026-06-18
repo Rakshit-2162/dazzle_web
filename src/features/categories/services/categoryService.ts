@@ -15,7 +15,7 @@ export const categoryService = {
     const { data, error } = await supabase
       .from("categories")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("name");
     return { data, error };
   },
 

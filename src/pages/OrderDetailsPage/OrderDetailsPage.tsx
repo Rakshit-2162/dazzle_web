@@ -93,6 +93,7 @@ const OrderDetailPage = () => {
       field: "category",
       headerName: t("categories.title"),
       renderCell: (row: OrderItem) => row.products?.categories?.name ?? "—",
+      width: 220,
     },
     {
       field: "product_code",
@@ -260,10 +261,11 @@ const OrderDetailPage = () => {
                   label={
                     isCompleted ? t("orders.completed") : t("orders.inProgress")
                   }
-                  size="small"
+                  variant="outlined"
                   sx={{
                     fontSize: 11,
-                    height: 22,
+                    height: 25,
+                    borderColor: isCompleted ? "#4CAF50" : "#FF9800",
                     backgroundColor: isCompleted ? "#4CAF5018" : "#FF980018",
                     color: isCompleted ? "#4CAF50" : "#FF9800",
                     fontWeight: 500,

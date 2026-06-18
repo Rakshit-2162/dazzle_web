@@ -57,10 +57,11 @@ const ClientsPage = () => {
       renderCell: (row: Client) => (
         <Chip
           label={row.status === Status.ACTIVE ? t('common.active') : t('common.inactive')}
-          size="small"
+          variant="outlined"
           sx={{
             fontSize: 11,
-            height: 22,
+            height: 25,
+            borderColor: row.status === Status.ACTIVE ? '#4CAF50' : '#F44336',
             backgroundColor: row.status === Status.ACTIVE ? '#4CAF5018' : '#F4433618',
             color: row.status === Status.ACTIVE ? '#4CAF50' : '#F44336',
             fontWeight: 500,

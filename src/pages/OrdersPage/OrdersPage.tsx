@@ -57,7 +57,7 @@ const OrdersPage = () => {
     {
       field: "total_qty",
       headerName: t("orders.totalQty"),
-      width: 120,
+      width: 130,
     },
     {
       field: "order_status",
@@ -70,10 +70,14 @@ const OrdersPage = () => {
               ? t("orders.inProgress")
               : t("orders.completed")
           }
-          size="small"
+          variant="outlined"
           sx={{
+            borderColor:
+              row.order_status === OrderStatus.IN_PROGRESS
+                ? "#FF9800"
+                : "#4CAF50",
             fontSize: 11,
-            height: 22,
+            height: 25,
             backgroundColor:
               row.order_status === OrderStatus.IN_PROGRESS
                 ? "#FF980018"
@@ -90,7 +94,7 @@ const OrdersPage = () => {
     {
       field: "created_at",
       headerName: t("common.createdAt"),
-      width: 160,
+      width: 170,
       renderCell: (row: OrderMaster) =>
         new Date(row.created_at).toLocaleDateString("en-IN", {
           day: "2-digit",

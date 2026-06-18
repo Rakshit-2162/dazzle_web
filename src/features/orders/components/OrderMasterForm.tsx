@@ -28,7 +28,7 @@ const OrderMasterForm = ({ onSubmit, defaultValues, isLoading }: OrderMasterForm
 
   useEffect(() => {
     const fetchClients = async () => {
-      const { data } = await clientService.getAll()
+      const { data } = await clientService.getAllActive()
       if (data) setClients(data as Client[])
     }
     fetchClients()
