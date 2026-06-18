@@ -58,9 +58,19 @@ export const orderService = {
   getItems: async (orderId: string) => {
     const { data, error } = await supabase
       .from("order_items")
-      .select("*, products(id, code, name, category_id, categories(id, name, type))")
-      .eq("order_id", orderId)
-      .order("created_at", { ascending: true });
+      .select(
+        "*, products(id, code, name, category_id, categories(id, name, type))",
+      )
+      .eq("order_id", orderId);
+    // .order("created_at", { ascending: true });
+
+    data?.sort((a, b) => {
+      const categoryCompare = (
+        a.products?.categories?.name ?? ""
+      ).localeCompare(b.products?.categories?.name ?? "");
+      if (categoryCompare !== 0) return categoryCompare;
+      return a.products?.name?.localeCompare(b.products?.name ?? "");
+    });
     return { data, error };
   },
 

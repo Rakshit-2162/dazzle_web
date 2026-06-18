@@ -10,6 +10,15 @@ export const clientService = {
     return { data, error }
   },
 
+  getAllActive: async () => {
+    const { data, error } = await supabase
+      .from('clients')
+      .select('*')
+      .eq('status', 'ACT')
+      .order('created_at', { ascending: false })
+    return { data, error }
+  },
+
   create: async (form: ClientForm, userId: string) => {
     const { data, error } = await supabase
       .from('clients')

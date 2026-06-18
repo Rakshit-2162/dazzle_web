@@ -203,8 +203,15 @@ const en = {
   },
   myAccount: {
     title: "My Account",
-    updateSuccess: "Account updated successfully",
-    updateError: "Failed to update account",
+    editProfile: "Edit Profile",
+    updateProfile: "Update Profile",
+    profileUpdateSuccess: "Profile updated successfully",
+    changePassword: "Change Password",
+    currentPassword: "Current Password",
+    newPassword: "New Password",
+    updatePassword: "Update Password",
+    passwordUpdateSuccess: "Password updated successfully",
+    incorrectCurrentPassword: "Incorrect current password",
   },
   validation: {
     emailRequired: "Email is required",

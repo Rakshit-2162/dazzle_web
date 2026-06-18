@@ -8,30 +8,27 @@ import {
   Chip,
   IconButton,
   Tooltip,
-} from '@mui/material'
-import {
-  Edit,
-  Delete,
-  Add,
-  ArrowForward,
-} from '@mui/icons-material'
-import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
-import { useTheme } from '@mui/material'
-import { tokens } from '../../styles/theme'
-import { useCategories } from '../../features/categories/hooks/useCategories'
-import CategoryForm from '../../features/categories/components/CategoryForm'
-import { DazzleButton, DazzleDialog } from '../../shared/components'
-import { PATHS } from '../../routes/paths'
-import { Status } from '../../constants'
-import { useDocumentTitle } from '../../shared/hooks/useDocumentTitle'
+} from "@mui/material";
+import { Edit, Delete, Add } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "@mui/material";
+import { tokens } from "../../styles/theme";
+import { useCategories } from "../../features/categories/hooks/useCategories";
+import CategoryForm from "../../features/categories/components/CategoryForm";
+import { DazzleButton, DazzleDialog } from "../../shared/components";
+import { PATHS } from "../../routes/paths";
+import { CategoryType, Status } from "../../constants";
+import { useDocumentTitle } from "../../shared/hooks/useDocumentTitle";
+import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
+import LayersOutlinedIcon from "@mui/icons-material/LayersOutlined";
 
 const CatalogPage = () => {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  const theme = useTheme()
-  const colors = tokens(theme.palette.mode)
-  useDocumentTitle(t('categories.title'))
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  useDocumentTitle(t("categories.title"));
 
   const {
     categories,
@@ -49,16 +46,16 @@ const CatalogPage = () => {
     handleDelete,
     openEditDialog,
     openDeleteDialog,
-  } = useCategories()
+  } = useCategories();
 
   return (
     <Box>
       {/* Header */}
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
           mb: 3,
         }}
       >
@@ -66,10 +63,10 @@ const CatalogPage = () => {
           variant="h6"
           sx={{ fontWeight: 600, color: colors.text.primary }}
         >
-          {t('categories.title')}
+          {t("categories.title")}
         </Typography>
         <DazzleButton
-          label={t('categories.addCategory')}
+          label={t("categories.addCategory")}
           variant="primary"
           startIcon={<Add />}
           onClick={() => setAddDialogOpen(true)}
@@ -96,14 +93,14 @@ const CatalogPage = () => {
       ) : categories.length === 0 ? (
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
             height: 200,
           }}
         >
           <Typography sx={{ color: colors.text.secondary }}>
-            {t('common.noData')}
+            {t("common.noData")}
           </Typography>
         </Box>
       ) : (
@@ -116,23 +113,29 @@ const CatalogPage = () => {
                   borderRadius: 3,
                   border: `1px solid ${theme.palette.divider}`,
                   backgroundColor: colors.background.paper,
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0px 4px 20px rgba(0,0,0,0.08)',
+                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                  borderLeft:
+                    category.type === CategoryType.PRIMARY
+                      ? "6px solid #3B82F6"
+                      : "6px solid #F97316",
+                  "&:hover": {
+                    transform: "translateY(-2px)",
+                    boxShadow: "0px 4px 20px rgba(0,0,0,0.08)",
                   },
-                  cursor: 'pointer',
+                  cursor: "pointer",
                 }}
                 onClick={() =>
-                  navigate(PATHS.CATALOG_PRODUCTS.replace(':categoryId', category.id))
+                  navigate(
+                    PATHS.CATALOG_PRODUCTS.replace(":categoryId", category.id),
+                  )
                 }
               >
                 <CardContent sx={{ pb: 1 }}>
                   <Box
                     sx={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      justifyContent: 'space-between',
+                      display: "flex",
+                      alignItems: "flex-start",
+                      justifyContent: "space-between",
                       mb: 1.5,
                     }}
                   >
@@ -146,75 +149,98 @@ const CatalogPage = () => {
                       {category.name}
                     </Typography>
                     <Chip
-                      label={category.status === Status.ACTIVE ? t('common.active') : t('common.inactive')}
-                      size="small"
+                      label={
+                        category.status === Status.ACTIVE
+                          ? t("common.active")
+                          : t("common.inactive")
+                      }
+                      variant="outlined"
                       sx={{
                         fontSize: 11,
-                        height: 22,
-                        backgroundColor: category.status === Status.ACTIVE
-                          ? '#4CAF5018'
-                          : '#F4433618',
-                        color: category.status === Status.ACTIVE
-                          ? '#4CAF50'
-                          : '#F44336',
+                        height: 25,
+                        borderColor:
+                          category.status === Status.ACTIVE
+                            ? "#4CAF50"
+                            : "#F44336",
+                        backgroundColor:
+                          category.status === Status.ACTIVE
+                            ? "#4CAF5018"
+                            : "#F4433618",
+                        color:
+                          category.status === Status.ACTIVE
+                            ? "#4CAF50"
+                            : "#F44336",
                         fontWeight: 500,
                       }}
                     />
                   </Box>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: colors.text.secondary, fontSize: 13 }}
-                  >
-                    {category.type}
-                  </Typography>
                 </CardContent>
 
                 <CardActions
                   sx={{
                     px: 2,
                     pb: 1.5,
-                    justifyContent: 'space-between',
+                    justifyContent: "space-between",
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <Box sx={{ display: 'flex', gap: 0.5 }}>
-                    <Tooltip title={t('common.edit')}>
+                  <Box sx={{ display: "flex", gap: 0.5 }}>
+                    <Chip
+                      label={
+                        category.type === CategoryType.PRIMARY
+                          ? CategoryType.PRIMARY
+                          : CategoryType.SECONDARY
+                      }
+                      icon={
+                        category.type === CategoryType.PRIMARY ? (
+                          <CategoryOutlinedIcon fontSize="small" color="inherit" />
+                        ) : (
+                          <LayersOutlinedIcon fontSize="small" color="inherit" />
+                        )
+                      }
+                      sx={{
+                        mt: 1,
+                        height: 25,
+                        width: "fit-content",
+                        fontWeight: 500,
+                        fontSize: 12,
+                        bgcolor:
+                          category.type === CategoryType.PRIMARY
+                            ? "#3B82F620"
+                            : "#F9731620",
+                        color:
+                          category.type === CategoryType.PRIMARY
+                            ? "#60A5FA"
+                            : "#F97316",
+                      }}
+                    />
+                  </Box>
+                  <Box sx={{ display: "flex", gap: 0.5 }}>
+                    <Tooltip title={t("common.edit")}>
                       <IconButton
                         size="small"
                         onClick={(e) => {
-                          e.stopPropagation()
-                          openEditDialog(category)
+                          e.stopPropagation();
+                          openEditDialog(category);
                         }}
                         sx={{ color: colors.text.secondary }}
                       >
                         <Edit fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title={t('common.delete')}>
+                    <Tooltip title={t("common.delete")}>
                       <IconButton
                         size="small"
                         onClick={(e) => {
-                          e.stopPropagation()
-                          openDeleteDialog(category)
+                          e.stopPropagation();
+                          openDeleteDialog(category);
                         }}
-                        sx={{ color: '#F44336' }}
+                        sx={{ color: "#F44336" }}
                       >
                         <Delete fontSize="small" />
                       </IconButton>
                     </Tooltip>
                   </Box>
-                  <Tooltip title="View Products">
-                    <IconButton
-                      size="small"
-                      sx={{ color: colors.primary.main }}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        navigate(PATHS.CATALOG_PRODUCTS.replace(':categoryId', category.id))
-                      }}
-                    >
-                      <ArrowForward fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
                 </CardActions>
               </Card>
             </Grid>
@@ -226,37 +252,36 @@ const CatalogPage = () => {
       <DazzleDialog
         open={addDialogOpen}
         onClose={() => setAddDialogOpen(false)}
-        title={t('categories.addCategory')}
-        primaryLabel={t('common.save')}
-        secondaryLabel={t('common.cancel')}
+        title={t("categories.addCategory")}
+        primaryLabel={t("common.save")}
+        secondaryLabel={t("common.cancel")}
         isLoading={isSubmitting}
         onPrimary={() => {
-          document.getElementById('category-form')?.dispatchEvent(
-            new Event('submit', { cancelable: true, bubbles: true })
-          )
+          document
+            .getElementById("category-form")
+            ?.dispatchEvent(
+              new Event("submit", { cancelable: true, bubbles: true }),
+            );
         }}
-        content={
-          <CategoryForm
-            onSubmit={handleAdd}
-            isLoading={isSubmitting}
-          />
-        }
+        content={<CategoryForm onSubmit={handleAdd} isLoading={isSubmitting} />}
       />
 
       {/* Edit Dialog */}
       <DazzleDialog
         open={editDialogOpen}
         onClose={() => {
-          setEditDialogOpen(false)
+          setEditDialogOpen(false);
         }}
-        title={t('categories.editCategory')}
-        primaryLabel={t('common.save')}
-        secondaryLabel={t('common.cancel')}
+        title={t("categories.editCategory")}
+        primaryLabel={t("common.save")}
+        secondaryLabel={t("common.cancel")}
         isLoading={isSubmitting}
         onPrimary={() => {
-          document.getElementById('category-form')?.dispatchEvent(
-            new Event('submit', { cancelable: true, bubbles: true })
-          )
+          document
+            .getElementById("category-form")
+            ?.dispatchEvent(
+              new Event("submit", { cancelable: true, bubbles: true }),
+            );
         }}
         content={
           <CategoryForm
@@ -271,31 +296,27 @@ const CatalogPage = () => {
       <DazzleDialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
-        title={t('categories.deleteCategory')}
-        primaryLabel={t('common.delete')}
-        secondaryLabel={t('common.cancel')}
+        title={t("categories.deleteCategory")}
+        primaryLabel={t("common.delete")}
+        secondaryLabel={t("common.cancel")}
         isLoading={isSubmitting}
         onPrimary={handleDelete}
         maxWidth="xs"
         content={
-          <Typography
-            variant="body2"
-            sx={{ color: '#666', lineHeight: 1.8 }}
-          >
-            {t('categories.deleteConfirm')}
-            {' '}
+          <Typography variant="body2" sx={{ color: "#666", lineHeight: 1.8 }}>
+            {t("categories.deleteConfirm")}{" "}
             <Typography
               component="span"
               variant="body2"
-              sx={{ color: '#F44336', fontWeight: 600 }}
+              sx={{ color: "#F44336", fontWeight: 600 }}
             >
-              {t('categories.deleteWarning')}
+              {t("categories.deleteWarning")}
             </Typography>
           </Typography>
         }
       />
     </Box>
-  )
-}
+  );
+};
 
-export default CatalogPage
+export default CatalogPage;
