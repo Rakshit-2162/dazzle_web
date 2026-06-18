@@ -7,7 +7,7 @@ export const productService = {
       .from("products")
       .select("*")
       .eq("category_id", categoryId)
-      .order("created_at", { ascending: false });
+      .order("code", { ascending: true });
     return { data, error };
   },
 
