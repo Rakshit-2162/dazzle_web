@@ -32,7 +32,7 @@ export const useMyAccount = () => {
     fetchEmail();
   }, []);
 
-  const handleUpdateProfile = async (data: ProfileFormValues) => {
+  const handleUpdateProfile = async (data: ProfileFormValues, onSuccess?: () => void) => {
     if (!user) return;
     setIsUpdatingProfile(true);
 
@@ -49,6 +49,7 @@ export const useMyAccount = () => {
         setUser({ ...user, user_name: updatedProfile.user_name });
       }
       showSnackbar(t("myAccount.profileUpdateSuccess"), "success");
+      onSuccess?.();
     } catch {
       showSnackbar(t("common.error"), "error");
     } finally {
