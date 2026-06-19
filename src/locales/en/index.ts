@@ -171,6 +171,7 @@ const en = {
     markedComplete: "Order marked as complete",
     markedInProgress: "Order marked as in progress",
     downloadExcel: "Download Excel",
+    downloadPDF: "Download PDF"
   },
   orderItems: {
     title: "Order Details",

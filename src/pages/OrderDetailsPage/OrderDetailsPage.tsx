@@ -16,8 +16,9 @@ import {
   ArrowBack,
   CheckCircle,
   RadioButtonUnchecked,
-  SaveAltRounded,
 } from "@mui/icons-material";
+import TableViewOutlinedIcon from "@mui/icons-material/TableViewOutlined";
+import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material";
@@ -51,7 +52,8 @@ const OrderDetailPage = () => {
     isLoading,
     isSubmitting,
     isTogglingStatus,
-    isDownloading,
+    isExcelDownloading,
+    isPdfDownloading,
     selectedItem,
     selectedItemIds,
     addItemsDialogOpen,
@@ -68,6 +70,7 @@ const OrderDetailPage = () => {
     toggleItemSelection,
     toggleAllItems,
     handleDownloadExcel,
+    handleDownloadPDF,
   } = useOrderDetail(id ?? "");
 
   const { control, handleSubmit, reset } = useForm<{ qty: number }>({
@@ -193,10 +196,19 @@ const OrderDetailPage = () => {
           {/* Download Excel button */}
           <DazzleButton
             label={t("orders.downloadExcel")}
-            startIcon={<SaveAltRounded />}
+            startIcon={<TableViewOutlinedIcon />}
             variant="outlined"
-            isLoading={isDownloading}
+            isLoading={isExcelDownloading}
             onClick={handleDownloadExcel}
+          />
+
+          {/* Download PDF button */}
+          <DazzleButton
+            label={t("orders.downloadPDF")}
+            startIcon={<PictureAsPdfOutlinedIcon />}
+            variant="outlined"
+            isLoading={isPdfDownloading}
+            onClick={handleDownloadPDF}
           />
 
           {/* Add items button */}
