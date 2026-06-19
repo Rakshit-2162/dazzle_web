@@ -6,6 +6,7 @@ import { useAuthStore } from "../../../store/authStore";
 import type { OrderMaster, OrderItem, OrderItemForm } from "../types";
 import { OrderStatus } from "../../../constants";
 import { exportToExcel } from "../services/downloadExcelService";
+import { exportToPdf } from "../services/downloadPdfService";
 
 export const useOrderDetail = (orderId: string) => {
   const { t } = useTranslation();
@@ -24,7 +25,8 @@ export const useOrderDetail = (orderId: string) => {
   const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
   const [isTogglingStatus, setIsTogglingStatus] = useState(false);
   const [deleteItemsDialogOpen, setDeleteItemsDialogOpen] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [isExcelDownloading, setIsExcelDownloading] = useState(false);
+  const [isPdfDownloading, setIsPdfDownloading] = useState(false);
 
   useEffect(() => {
     const fetchOrderDetail = async () => {
@@ -137,12 +139,28 @@ export const useOrderDetail = (orderId: string) => {
     }
 
     try {
-      setIsDownloading(true);
+      setIsExcelDownloading(true);
       await exportToExcel(order, items, `Order_${order?.order_no}.xlsx`);
     } catch (error) {
       showSnackbar(`Error downloading Excel file: ${error}`, "error");
     } finally {
-      setIsDownloading(false);
+      setIsExcelDownloading(false);
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    if (items.length === 0) {
+      showSnackbar(t("orderItems.noItemsToDownload"), "info");
+      return;
+    }
+
+    try {
+      setIsPdfDownloading(true);
+      await exportToPdf(order, items, `Order_${order?.order_no}.pdf`);
+    } catch (error) {
+      showSnackbar(`Error downloading PDF file: ${error}`, "error");
+    } finally {
+      setIsPdfDownloading(false);
     }
   };
 
@@ -157,7 +175,8 @@ export const useOrderDetail = (orderId: string) => {
     editItemDialogOpen,
     isTogglingStatus,
     deleteItemsDialogOpen,
-    isDownloading,
+    isExcelDownloading,
+    isPdfDownloading,
     setAddItemsDialogOpen,
     setEditItemDialogOpen,
     setDeleteItemsDialogOpen,
@@ -170,5 +189,6 @@ export const useOrderDetail = (orderId: string) => {
     refresh,
     handleToggleStatus,
     handleDownloadExcel,
+    handleDownloadPDF,
   };
 };

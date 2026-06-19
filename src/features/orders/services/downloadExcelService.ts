@@ -62,11 +62,16 @@ function addMetadata(
     ["Distributor", order?.clients?.name ?? ""],
     ["Total Qty", `${order?.total_qty} item(s)`],
     ["Remarks", order?.remarks ?? ""],
-    ["Date", order?.created_at?.slice(0, 10) ?? ""],
+    ["Date", new Date(order?.created_at ?? "")],
   ];
 
   rows.forEach(([label, value]) => {
     const r = sheet.addRow([label, value]);
+  
+    if (label === "Date" && value instanceof Date) {
+      r.getCell(2).numFmt = "dd-mm-yyyy hh:mm";
+    }
+
     sheet.mergeCells(r.number, 2, r.number, totalColumns);
     r.getCell(1).font = { bold: true };
     r.getCell(1).fill = {
