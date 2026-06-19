@@ -1,46 +1,54 @@
-import { useEffect } from 'react'
-import { supabase } from '../../../lib/supabaseClient'
-import { useAuthStore } from '../../../store/authStore'
-import { authService } from '../services/authService'
+import { useEffect, useRef } from "react";
+import { supabase } from "../../../lib/supabaseClient";
+import { useAuthStore } from "../../../store/authStore";
+import { authService } from "../services/authService";
 
 export const useAuth = () => {
-  const { setUser, setLoading, clearAuth } = useAuthStore()
+  const { setUser, setLoading, clearAuth } = useAuthStore();
+  const isInitialized = useRef(false);
 
   useEffect(() => {
     const initAuth = async () => {
       try {
-        setLoading(true)
-        const result = await supabase.auth.getSession()
-        const session = result?.data?.session
+        setLoading(true);
+        const result = await supabase.auth.getSession();
+        const session = result?.data?.session;
 
         if (session?.user) {
-          const { data: profile } = await authService.getUserProfile(session.user.id)
-          setUser(profile)
+          const { data: profile } = await authService.getUserProfile(
+            session.user.id,
+          );
+          setUser(profile);
         } else {
-          clearAuth()
+          clearAuth();
         }
       } catch {
-        clearAuth()
+        clearAuth();
       } finally {
-        setLoading(false)
+        isInitialized.current = true;
+        setLoading(false);
       }
-    }
+    };
 
-    initAuth()
+    initAuth();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
-          authService.getUserProfile(session.user.id).then(({ data: profile }) => {
-            setUser(profile)
-            setLoading(false)
-          })
-        } else if (event === 'SIGNED_OUT') {
-          clearAuth()
-        }
-      }
-    )
+        if (!isInitialized.current) return;
 
-    return () => authListener?.subscription?.unsubscribe()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-}
+        if (event === "SIGNED_IN" && session?.user) {
+          authService
+            .getUserProfile(session.user.id)
+            .then(({ data: profile }) => {
+              setUser(profile);
+              setLoading(false);
+            });
+        } else if (event === "SIGNED_OUT") {
+          clearAuth();
+        }
+      },
+    );
+
+    return () => authListener?.subscription?.unsubscribe();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+};

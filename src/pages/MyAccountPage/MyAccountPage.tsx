@@ -186,7 +186,11 @@ const MyAccountPage = () => {
 
           <Box
             component="form"
-            onSubmit={profileForm.handleSubmit(handleUpdateProfile)}
+            onSubmit={profileForm.handleSubmit((data) =>
+              handleUpdateProfile(data, () =>
+                profileForm.reset({ user_name: data.user_name }),
+              ),
+            )}
           >
             <DazzleTextField
               name="user_name"

@@ -30,7 +30,7 @@ export async function exportToExcel(
         .map((i) => i.products!.categories!.name),
     ),
   );
-  const totalColumns = 2 + primaryCategories.length;
+  const totalColumns = 1 + primaryCategories.length;
 
   addMetadata(sheet, orderMaster, totalColumns);
 
@@ -52,7 +52,11 @@ export async function exportToExcel(
   );
 }
 
-function addMetadata(sheet: ExcelJS.Worksheet, order: OrderMaster | null, totalColumns: number) {
+function addMetadata(
+  sheet: ExcelJS.Worksheet,
+  order: OrderMaster | null,
+  totalColumns: number,
+) {
   const rows = [
     ["Order No", order?.order_no],
     ["Distributor", order?.clients?.name ?? ""],
@@ -88,14 +92,13 @@ function addPrimaryTable(sheet: ExcelJS.Worksheet, items: OrderItem[]) {
     ...new Set(primary.map((i) => i.products!.categories!.name)),
   ].sort();
 
-  const header = sheet.addRow(["Product Code", "Product Name", ...categories]);
+  const header = sheet.addRow(["Product Name", ...categories]);
 
   styleHeader(header);
 
   const map: Record<
     string,
     {
-      code: string;
       name: string;
       qty: Record<string, number>;
     }
@@ -103,19 +106,21 @@ function addPrimaryTable(sheet: ExcelJS.Worksheet, items: OrderItem[]) {
 
   primary.forEach((item) => {
     const p = item.products!;
-    map[p.code] ??= {
-      code: p.code,
-      name: p.name,
-      qty: {},
-    };
+    const key = p.name.trim().toLowerCase();
 
-    map[p.code].qty[p.categories!.name] =
-      (map[p.code].qty[p.categories!.name] ?? 0) + item.qty;
+    if (!map[key]) {
+      map[key] = {
+        name: p.name,
+        qty: {},
+      };
+    }
+
+    const categoryName = p.categories!.name;
+    map[key].qty[categoryName] = (map[key].qty[categoryName] ?? 0) + item.qty;
   });
 
   Object.values(map).forEach((p) => {
     const row = sheet.addRow([
-      p.code,
       p.name,
       ...categories.map((c) => p.qty[c] ?? "-"),
     ]);
@@ -127,8 +132,6 @@ function addPrimaryTable(sheet: ExcelJS.Worksheet, items: OrderItem[]) {
         vertical: "middle",
       };
     });
-
-    row.getCell(2).alignment = { horizontal: "left" };
   });
 }
 
@@ -148,19 +151,15 @@ function addSecondaryTables(sheet: ExcelJS.Worksheet, items: OrderItem[]) {
     sheet.addRow([]);
 
     const title = sheet.addRow([category]);
-    sheet.mergeCells(title.number, 1, title.number, 3);
+    sheet.mergeCells(title.number, 1, title.number, 2);
     styleHeader(title);
 
-    const header = sheet.addRow(["Product Code", "Product Name", "Qty"]);
+    const header = sheet.addRow(["Product Name", "Qty"]);
 
     styleHeader(header);
 
     list.forEach((item) => {
-      const r = sheet.addRow([
-        item.products?.code,
-        item.products?.name,
-        item.qty,
-      ]);
+      const r = sheet.addRow([item.products?.name, item.qty]);
 
       r.eachCell((c) => {
         c.border = BORDER_THIN;
@@ -169,8 +168,6 @@ function addSecondaryTables(sheet: ExcelJS.Worksheet, items: OrderItem[]) {
           vertical: "middle",
         };
       });
-
-      r.getCell(2).alignment = { horizontal: "left" };
     });
   });
 }
@@ -201,8 +198,8 @@ function autoFitColumns(sheet: ExcelJS.Worksheet) {
         cell.value == null
           ? ""
           : typeof cell.value === "object"
-          ? cell.text
-          : String(cell.value);
+            ? cell.text
+            : String(cell.value);
 
       max = Math.max(max, value.length);
     });
