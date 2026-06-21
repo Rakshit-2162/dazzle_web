@@ -1,5 +1,11 @@
 import { Box, Typography, Chip, IconButton, Tooltip } from "@mui/material";
-import { Edit, Delete, Add, CheckCircle, RadioButtonUnchecked } from "@mui/icons-material";
+import {
+  Edit,
+  Delete,
+  Add,
+  CheckCircle,
+  RadioButtonUnchecked,
+} from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material";
@@ -110,7 +116,10 @@ const OrdersPage = () => {
       headerName: t("common.actions"),
       width: 150,
       renderCell: (row: OrderMaster) => (
-        <Box sx={{ display: "flex", gap: 0.5 }}>
+        <Box
+          sx={{ display: "flex", gap: 0.5 }}
+          onClick={(e) => e.stopPropagation()}
+        >
           <Tooltip
             title={
               row.order_status === OrderStatus.IN_PROGRESS

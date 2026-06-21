@@ -158,7 +158,7 @@ const en = {
     inProgress: "In Progress",
     completed: "Completed",
     remarks: "Remarks",
-    totalQty: "Total Quantity",
+    totalQty: "Total Qty",
     client: "Client",
     addSuccess: "Order added successfully",
     updateSuccess: "Order updated successfully",
