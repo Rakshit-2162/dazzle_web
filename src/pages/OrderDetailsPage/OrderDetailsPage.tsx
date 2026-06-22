@@ -261,7 +261,7 @@ const OrderDetailPage = () => {
               backgroundColor: colors.background.paper,
             }}
           >
-            <CardContent sx={{ p: 2 }}>
+            <CardContent sx={{ px: 2 }}>
               <Typography
                 variant="caption"
                 sx={{ color: colors.text.secondary, fontSize: 12 }}
@@ -275,7 +275,7 @@ const OrderDetailPage = () => {
                   }
                   variant="outlined"
                   sx={{
-                    fontSize: 11,
+                    fontSize: 12,
                     height: 25,
                     borderColor: isCompleted ? "#4CAF50" : "#FF9800",
                     backgroundColor: isCompleted ? "#4CAF5018" : "#FF980018",
@@ -311,7 +311,7 @@ const OrderDetailPage = () => {
                   color: colors.text.primary,
                 }}
               >
-                {order?.total_qty ?? 0}
+                {`${order?.total_qty ?? 0} item(s)`}
               </Typography>
             </CardContent>
           </Card>
