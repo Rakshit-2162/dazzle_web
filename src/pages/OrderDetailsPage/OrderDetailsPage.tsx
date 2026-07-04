@@ -8,6 +8,10 @@ import {
   Card,
   CardContent,
   Grid,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import {
   Edit,
@@ -16,11 +20,13 @@ import {
   ArrowBack,
   CheckCircle,
   RadioButtonUnchecked,
+  CloudDownloadOutlined,
 } from "@mui/icons-material";
 import TableViewOutlinedIcon from "@mui/icons-material/TableViewOutlined";
 import PictureAsPdfOutlinedIcon from "@mui/icons-material/PictureAsPdfOutlined";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../styles/theme";
 import { useOrderDetail } from "../../features/orders/hooks/useOrderDetail";
@@ -44,6 +50,8 @@ const OrderDetailPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [downloadMenuAnchorEl, setDownloadMenuAnchorEl] =
+    useState<null | HTMLElement>(null);
   useDocumentTitle(t("orderItems.title"));
 
   const {
@@ -78,6 +86,7 @@ const OrderDetailPage = () => {
   });
 
   const isCompleted = order?.order_status === OrderStatus.COMPLETED;
+  const isDownloading = isExcelDownloading || isPdfDownloading;
 
   const columns: DazzleTableColumn[] = [
     {
@@ -193,23 +202,80 @@ const OrderDetailPage = () => {
             isLoading={isTogglingStatus}
           />
 
-          {/* Download Excel button */}
+          {/* Download button with menu */}
           <DazzleButton
-            label={t("orders.downloadExcel")}
-            startIcon={<TableViewOutlinedIcon />}
+            label={t("orders.download")}
+            startIcon={<CloudDownloadOutlined />}
             variant="outlined"
-            isLoading={isExcelDownloading}
-            onClick={handleDownloadExcel}
+            isLoading={isDownloading}
+            onClick={(e) => setDownloadMenuAnchorEl(e.currentTarget)}
           />
 
-          {/* Download PDF button */}
-          <DazzleButton
-            label={t("orders.downloadPDF")}
-            startIcon={<PictureAsPdfOutlinedIcon />}
-            variant="outlined"
-            isLoading={isPdfDownloading}
-            onClick={handleDownloadPDF}
-          />
+          {/* Download menu */}
+          <Menu
+            anchorEl={downloadMenuAnchorEl}
+            open={Boolean(downloadMenuAnchorEl)}
+            onClose={() => setDownloadMenuAnchorEl(null)}
+            transformOrigin={{ horizontal: "right", vertical: "top" }}
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            slotProps={{
+              paper: {
+                sx: {
+                  backgroundColor: colors.background.paper,
+                  borderRadius: 2,
+                  mt: 1,
+                  minWidth: 180,
+                  boxShadow: "0px 4px 20px rgba(0,0,0,0.12)",
+                  border: `1px solid ${theme.palette.divider}`,
+                },
+              },
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                setDownloadMenuAnchorEl(null);
+                handleDownloadExcel();
+              }}
+              disabled={isExcelDownloading}
+              sx={{ py: 1.2, gap: 0 }}
+            >
+              <ListItemIcon>
+                <TableViewOutlinedIcon
+                  sx={{ color: colors.primary.main }}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary={t("orders.downloadExcel")}
+                slotProps={{
+                  primary: {
+                    sx: { fontSize: 13, color: colors.text.primary },
+                  },
+                }}
+              />
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setDownloadMenuAnchorEl(null);
+                handleDownloadPDF();
+              }}
+              disabled={isPdfDownloading}
+              sx={{ py: 1.2, gap: 0 }}
+            >
+              <ListItemIcon>
+                <PictureAsPdfOutlinedIcon
+                  sx={{ color: colors.primary.main }}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary={t("orders.downloadPDF")}
+                slotProps={{
+                  primary: {
+                    sx: { fontSize: 13, color: colors.text.primary },
+                  },
+                }}
+              />
+            </MenuItem>
+          </Menu>
 
           {/* Add items button */}
           <DazzleButton
