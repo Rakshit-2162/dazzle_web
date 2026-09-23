@@ -97,7 +97,6 @@ export function exportToPdf(
     // left table
     autoTable(doc, {
       startY,
-      startX: leftX,
       margin: { left: leftX, right: rightX },
       head: [
         [{ content: leftEntry[0], colSpan: 2, styles: { halign: 'left' } }],
@@ -112,9 +111,6 @@ export function exportToPdf(
         1: { cellWidth: 20, halign: 'center' },
       },
       tableWidth,
-      didDrawPage: () => {
-        // reset so right table doesn't shift
-      },
     });
   
     leftFinalY = pdf.lastAutoTable?.finalY ?? startY;
