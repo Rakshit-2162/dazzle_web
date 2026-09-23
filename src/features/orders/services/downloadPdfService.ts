@@ -79,21 +79,71 @@ export function exportToPdf(
 
 
   Object.entries(groups).forEach(([name,list])=>{
-    autoTable(doc,{
-      startY: (pdf.lastAutoTable?.finalY ?? 10) + 8,
-      head:[[name]],
-      theme:"grid",
-      headStyles:{fillColor:BLUE,textColor:255}
-    });
-
-    autoTable(doc,{
-      startY: (pdf.lastAutoTable?.finalY ?? 10) + 8,
-      head:[["Product Name","Qty"]],
-      body:list.map(i=>[i.products?.name ?? "", i.qty]),
-      theme:"grid",
-      headStyles:{fillColor:BLUE,textColor:255},
-      styles:{fontSize:8}
-    });
+    const groupEntries = Object.entries(groups)
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const margin = 10
+    const gap = 6
+    const tableWidth = (pageWidth - margin * 2 - gap) / 2
+    
+    for (let i = 0; i < groupEntries.length; i += 2) {
+      const leftEntry = groupEntries[i]
+      const rightEntry = groupEntries[i + 1]
+    
+      const startY = (pdf.lastAutoTable?.finalY ?? 10) + 8
+    
+      // left table
+      autoTable(doc, {
+        startY,
+        margin: { left: margin, right: pageWidth / 2 + gap / 2 },
+        head: [
+          [{ content: leftEntry[0], colSpan: 2, styles: { halign: 'left' } }],
+          ['Product Name', 'Qty'],
+        ],
+        body: leftEntry[1].map(i => [i.products?.name ?? '', i.qty]),
+        theme: 'grid',
+        headStyles: { fillColor: BLUE, textColor: 255, fontSize: 8 },
+        styles: { fontSize: 8, cellPadding: 2 },
+        columnStyles: {
+          0: { cellWidth: tableWidth - 22 },
+          1: { cellWidth: 20, halign: 'center' },
+        },
+        tableWidth,
+      })
+    
+      const leftFinalY = pdf.lastAutoTable?.finalY ?? startY
+    
+      // right table (only if exists)
+      if (rightEntry) {
+        autoTable(doc, {
+          startY,
+          margin: { left: pageWidth / 2 + gap / 2, right: margin },
+          head: [
+            [{ content: rightEntry[0], colSpan: 2, styles: { halign: 'left' } }],
+            ['Product Name', 'Qty'],
+          ],
+          body: rightEntry[1].map(i => [i.products?.name ?? '', i.qty]),
+          theme: 'grid',
+          headStyles: { fillColor: BLUE, textColor: 255, fontSize: 8 },
+          styles: { fontSize: 8, cellPadding: 2 },
+          columnStyles: {
+            0: { cellWidth: tableWidth - 22 },
+            1: { cellWidth: 20, halign: 'center' },
+          },
+          tableWidth,
+        })
+    
+        const rightFinalY = pdf.lastAutoTable?.finalY ?? startY
+    
+        // set finalY to whichever table is taller so next pair starts below both
+        if (leftFinalY > (pdf.lastAutoTable?.finalY ?? 0)) {
+          // manually update so next iteration picks up correct Y
+          ;(pdf as AutoTableDoc).lastAutoTable = { finalY: Math.max(leftFinalY, rightFinalY) }
+        }
+      } else {
+        // odd category — restore left finalY for next iteration
+        ;(pdf as AutoTableDoc).lastAutoTable = { finalY: leftFinalY }
+      }
+    }
   });
 
   doc.save(fileName.endsWith(".pdf") ? fileName : fileName + ".pdf");
