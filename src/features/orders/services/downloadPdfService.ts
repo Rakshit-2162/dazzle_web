@@ -82,103 +82,70 @@ export function exportToPdf(
   const margin = 10;
   const gap = 6;
   const tableWidth = (pageWidth - margin * 2 - gap) / 2;
+  const leftX = margin;
+  const rightX = margin + tableWidth + gap;
   
   for (let i = 0; i < groupEntries.length; i += 2) {
     const leftEntry = groupEntries[i];
     const rightEntry = groupEntries[i + 1];
   
+    // capture startY BEFORE either table is drawn
     const startY = (pdf.lastAutoTable?.finalY ?? 10) + 8;
+    let leftFinalY = startY;
+    let rightFinalY = startY;
   
-    // Left table
+    // left table
     autoTable(doc, {
       startY,
-      margin: {
-        left: margin,
-        right: pageWidth / 2 + gap / 2,
-      },
+      startX: leftX,
+      margin: { left: leftX, right: rightX },
       head: [
-        [
-          {
-            content: leftEntry[0],
-            colSpan: 2,
-            styles: { halign: "left" },
-          },
-        ],
-        ["Product Name", "Qty"],
+        [{ content: leftEntry[0], colSpan: 2, styles: { halign: 'left' } }],
+        ['Product Name', 'Qty'],
       ],
-      body: leftEntry[1].map(item => [
-        item.products?.name ?? "",
-        item.qty,
-      ]),
-      theme: "grid",
-      headStyles: {
-        fillColor: BLUE,
-        textColor: 255,
-        fontSize: 8,
-      },
-      styles: {
-        fontSize: 8,
-        cellPadding: 2,
-      },
+      body: leftEntry[1].map(item => [item.products?.name ?? '', item.qty]),
+      theme: 'grid',
+      headStyles: { fillColor: BLUE, textColor: 255, fontSize: 8 },
+      styles: { fontSize: 8, cellPadding: 2 },
       columnStyles: {
         0: { cellWidth: tableWidth - 22 },
-        1: { cellWidth: 20, halign: "center" },
+        1: { cellWidth: 20, halign: 'center' },
       },
       tableWidth,
+      didDrawPage: () => {
+        // reset so right table doesn't shift
+      },
     });
   
-    const leftFinalY = pdf.lastAutoTable?.finalY ?? startY;
+    leftFinalY = pdf.lastAutoTable?.finalY ?? startY;
   
-    let finalY = leftFinalY;
-  
-    // Right table
+    // right table — reset lastAutoTable.finalY to startY so it draws at same Y
     if (rightEntry) {
+      pdf.lastAutoTable = { finalY: startY - 8 };
+  
       autoTable(doc, {
         startY,
-        margin: {
-          left: pageWidth / 2 + gap / 2,
-          right: margin,
-        },
+        margin: { left: rightX, right: margin },
         head: [
-          [
-            {
-              content: rightEntry[0],
-              colSpan: 2,
-              styles: { halign: "left" },
-            },
-          ],
-          ["Product Name", "Qty"],
+          [{ content: rightEntry[0], colSpan: 2, styles: { halign: 'left' } }],
+          ['Product Name', 'Qty'],
         ],
-        body: rightEntry[1].map(item => [
-          item.products?.name ?? "",
-          item.qty,
-        ]),
-        theme: "grid",
-        headStyles: {
-          fillColor: BLUE,
-          textColor: 255,
-          fontSize: 8,
-        },
-        styles: {
-          fontSize: 8,
-          cellPadding: 2,
-        },
+        body: rightEntry[1].map(item => [item.products?.name ?? '', item.qty]),
+        theme: 'grid',
+        headStyles: { fillColor: BLUE, textColor: 255, fontSize: 8 },
+        styles: { fontSize: 8, cellPadding: 2 },
         columnStyles: {
           0: { cellWidth: tableWidth - 22 },
-          1: { cellWidth: 20, halign: "center" },
+          1: { cellWidth: 20, halign: 'center' },
         },
         tableWidth,
       });
   
-      const rightFinalY = pdf.lastAutoTable?.finalY ?? startY;
-  
-      finalY = Math.max(leftFinalY, rightFinalY);
+      rightFinalY = pdf.lastAutoTable?.finalY ?? startY;
     }
   
-    // Make the next pair start below the taller table
-    pdf.lastAutoTable = {
-      finalY,
-    };
+    // next pair starts below the taller table
+    pdf.lastAutoTable = { finalY: Math.max(leftFinalY, rightFinalY) };
   }
 
   doc.save(fileName.endsWith(".pdf") ? fileName : fileName + ".pdf");
